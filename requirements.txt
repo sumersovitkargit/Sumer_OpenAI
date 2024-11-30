@@ -1,0 +1,4 @@
+flask
+werkzeug==1.0.1  # or werkzeug>=2.0.0 depending on your Flask version
+requests
+markupsafe==1.1.1

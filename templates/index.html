@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Safety Analysis - SolunistResearch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            background-color: #afa04c;
+            color: white;
+            padding: 20px 0;
+            margin: 0;
+            text-align: center;
+        }
+        h3 {
+            color: #ece9e9;
+            background-color: #4c98af;
+            margin: 5px 0 20px 0;
+            text-align: center;
+        }
+        form {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-width: 500px;
+            text-align: center;
+        }
+        form label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        form input[type="file"] {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #afa04c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #a04545;
+        }
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .image-container, .result-container {
+            flex: 1;
+            margin: 10px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-width: 300px;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .result-container {
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>SolunistResearch </h1>
+    <h3>Content Safety Anyalyser</h3>
+
+    <form id="uploadForm">
+        <label for="file">Choose an image:</label>
+        <input type="file" name="file" id="file" accept="image/*" required>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <div class="content">
+        <div class="image-container">
+            <h2>Uploaded Image</h2>
+            <img id="uploadedImage" src="" alt="Uploaded Image Preview" style="display: none;">
+        </div>
+        <div class="result-container">
+            <h2>Analysis Result</h2>
+            <div id="result">Waiting for an upload...</div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const resultDiv = document.getElementById('result');
+        const uploadedImage = document.getElementById('uploadedImage');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                resultDiv.textContent = 'No file selected!';
+                return;
+            }
+
+            // Display the uploaded image
+            const imageUrl = URL.createObjectURL(file);
+            uploadedImage.src = imageUrl;
+            uploadedImage.style.display = 'block';
+
+            const formData = new FormData(form);
+            resultDiv.textContent = 'Uploading and analyzing...';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.textContent = `\n${JSON.stringify(data, null, 4)}`;
+                } else {
+                    resultDiv.textContent = 'Error: Could not analyze the image.';
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Error: An unexpected error occurred.';
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
